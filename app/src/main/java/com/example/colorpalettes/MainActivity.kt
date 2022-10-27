@@ -1,11 +1,26 @@
 package com.example.colorpalettes
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.navigation.compose.rememberNavController
+import com.backendless.Backendless
+import com.example.colorpalettes.navigation.SetupNavGraph
+import com.example.colorpalettes.ui.theme.ColorPalettesAppTheme
+import com.example.colorpalettes.util.Constants.API_KEY
+import com.example.colorpalettes.util.Constants.APP_ID
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        Backendless.initApp(this, APP_ID, API_KEY)
+        setContent {
+            ColorPalettesAppTheme() {
+                val navController = rememberNavController()
+                SetupNavGraph(navHostController = navController)
+            }
+        }
     }
 }
