@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.colorpalettes.presentation.screens.login.LoginScreen
 
 @Composable
 fun SetupNavGraph(navHostController: NavHostController) {
@@ -11,7 +12,9 @@ fun SetupNavGraph(navHostController: NavHostController) {
         navController = navHostController,
         startDestination = Screen.Login.route
     ) {
-        composable(route = Screen.Login.route) {}
+        composable(route = Screen.Login.route) {
+            LoginScreen(navController = navHostController)
+        }
         composable(route = Screen.Home.route) {}
         composable(route = Screen.Details.route) {}
         composable(route = Screen.Saved.route) {}

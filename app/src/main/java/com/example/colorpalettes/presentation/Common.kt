@@ -1,4 +1,4 @@
-package com.example.colorpalettes.presentation.components
+package com.example.colorpalettes.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -10,6 +10,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import com.backendless.Backendless
+import com.backendless.async.callback.AsyncCallback
+import com.backendless.exceptions.BackendlessFault
 import com.example.colorpalettes.util.Constants.CLIENT_ID
 import com.example.colorpalettes.util.Constants.CLIENT_SECRET
 import com.google.android.gms.auth.api.Auth
@@ -19,6 +22,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeToken
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -42,7 +46,7 @@ fun StartActivityForResult(
                 }
                 val serverAuthCode = result?.signInAccount?.serverAuthCode
                 Log.d("StartActivityForResult", "ACCESSES TOKEN: $serverAuthCode")
-                scope.launch {
+                scope.launch(Dispatchers.IO) {
                     onResultReceived(getAccessToken(authCode = serverAuthCode))
                 }
             } else {
@@ -62,11 +66,28 @@ fun StartActivityForResult(
 fun signIn(
     activity: Activity, launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
 ) {
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail()
-        .requestServerAuthCode(CLIENT_ID).build()
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestEmail()
+        .requestServerAuthCode(CLIENT_ID)
+        .build()
     val client = GoogleSignIn.getClient(activity, gso)
 
     launcher.launch(client.signInIntent)
+}
+
+fun logout(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+    Backendless.UserService.logout(
+        object : AsyncCallback<Void> {
+            override fun handleResponse(response: Void?) {
+                onSuccess()
+            }
+
+            override fun handleFault(fault: BackendlessFault?) {
+                onFailure(fault?.message.toString())
+            }
+
+        }
+    )
 }
 
 private fun getAccessToken(authCode: String?): String? {
