@@ -2,6 +2,7 @@ package com.example.colorpalettes.presentation
 
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.ui.graphics.*
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,9 +11,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
 import com.backendless.Backendless
 import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
+import com.example.colorpalettes.domain.model.ColorPalette
 import com.example.colorpalettes.util.Constants.CLIENT_ID
 import com.example.colorpalettes.util.Constants.CLIENT_SECRET
 import com.google.android.gms.auth.api.Auth
@@ -107,3 +110,26 @@ private fun getAccessToken(authCode: String?): String? {
     }
     return tokenResponse.accessToken
 }
+fun extractColor(colorPalette: ColorPalette?): List<String>{
+    val colors = mutableListOf<String>()
+    colorPalette?.colors?.split(",")?.forEach {
+        colors.add(it.trim())
+    }
+    return colors
+}
+fun hexToColor(colorHex: String): Color {
+    return try {
+        Color(("FF" + colorHex.removePrefix("#")).toLong(16))
+    } catch (e: Exception){
+        Color("FFFFFFFF".toLong(16))
+    }
+}
+
+
+
+
+
+
+
+
+
