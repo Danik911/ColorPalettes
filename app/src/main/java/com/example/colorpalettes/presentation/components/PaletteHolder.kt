@@ -44,6 +44,10 @@ fun PaletteHolder(
         contentAlignment = Alignment.BottomEnd
     ) {
         ColorPaletteComposable(colors = colors)
+        NumberOfLikes(number = colorPalette.totalLikes ?: 0)
+        if (!colorPalette.approved) {
+            WaitingForApproval()
+        }
     }
 }
 
@@ -63,7 +67,7 @@ fun ColorPaletteComposable(colors: List<String>) {
             }
             .clip(RoundedCornerShape(size = PADDING_EXTRA_LARGE))
     ) {
-        colors.forEach { colorHex->
+        colors.forEach { colorHex ->
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -106,7 +110,7 @@ fun WaitingForApproval() {
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(size = 20.dp))
+            .clip(RoundedCornerShape(size = PADDING_EXTRA_LARGE))
             .background(Color.Black.copy(alpha = ContentAlpha.medium)),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
