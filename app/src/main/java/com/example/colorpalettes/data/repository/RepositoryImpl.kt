@@ -26,4 +26,12 @@ class RepositoryImpl @Inject constructor(
         return backendlessDataSource.observeDeleteRelation()
     }
 
+    override suspend fun observeApproval(): Flow<ColorPalette> {
+        return backendlessDataSource.observeApproval()
+    }
+
+    override suspend fun observeDeletedPalettes(): Flow<ColorPalette> {
+        return backendlessDataSource.observeDeletedPalettes()
+    }
+
 }

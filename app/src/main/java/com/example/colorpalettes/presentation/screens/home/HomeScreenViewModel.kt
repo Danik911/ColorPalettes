@@ -21,6 +21,8 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
         getColorPalettes()
         observeAddRelation()
         observeDeleteRelation()
+        observeApproval()
+        observeDeletedPalettes()
     }
 
     private fun getColorPalettes() {
@@ -36,10 +38,35 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
             }
         }
     }
-    private fun observeDeleteRelation(){
+
+    private fun observeDeleteRelation() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.observeDeleteRelation().collect{status->
+            repository.observeDeleteRelation().collect { status ->
                 updateNumberOfLikes(relationStatus = status)
+            }
+        }
+    }
+
+    private fun observeApproval() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.observeApproval().collect { colorPalette ->
+                if (colorPalette.approved) {
+                    colorPalettes.add(colorPalette)
+                } else {
+                    colorPalettes.removeAll {
+                        it.objectId == colorPalette.objectId
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeDeletedPalettes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.observeDeletedPalettes().collect { colorPaletteFlow ->
+                colorPalettes.removeAll { colorPalette ->
+                    colorPalette.objectId == colorPaletteFlow.objectId
+                }
             }
         }
     }

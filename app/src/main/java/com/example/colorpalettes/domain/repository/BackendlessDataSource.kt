@@ -9,5 +9,7 @@ interface BackendlessDataSource{
     suspend fun getLikeCount(objectId: String): ColorPalette
     suspend fun observeAddRelation(): Flow<RelationStatus?>
     suspend fun observeDeleteRelation(): Flow<RelationStatus?>
+    suspend fun observeApproval(): Flow<ColorPalette>
+    suspend fun observeDeletedPalettes(): Flow<ColorPalette>
 
 }

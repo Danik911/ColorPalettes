@@ -4,6 +4,7 @@ import com.backendless.Persistence
 import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
 import com.backendless.persistence.DataQueryBuilder
+import com.backendless.rt.data.EventHandler
 import com.backendless.rt.data.RelationStatus
 import com.example.colorpalettes.domain.model.ColorPalette
 import com.example.colorpalettes.domain.repository.BackendlessDataSource
@@ -96,4 +97,44 @@ class BackendlessDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun observeApproval(): Flow<ColorPalette> {
+        return callbackFlow {
+            val event = backendless.of(ColorPalette::class.java).rt()
+            val callback = object : AsyncCallback<ColorPalette> {
+                override fun handleResponse(response: ColorPalette) {
+                    trySendBlocking(response)
+                }
+
+                override fun handleFault(fault: BackendlessFault?) {
+                    fault?.message?.let { cancel(message = it) }
+                }
+            }
+            event.addUpdateListener("approved = false or approved = true", callback)
+            awaitClose {
+                event.removeUpdateListeners()
+            }
+        }
+    }
+
+    override suspend fun observeDeletedPalettes(): Flow<ColorPalette> {
+        return callbackFlow {
+            val event = backendless.of(ColorPalette::class.java).rt()
+            val callback = object : AsyncCallback<ColorPalette> {
+                override fun handleResponse(response: ColorPalette) {
+                    trySendBlocking(response)
+                }
+
+                override fun handleFault(fault: BackendlessFault?) {
+                    fault?.message?.let { cancel(message = it) }
+                }
+            }
+            event.addDeleteListener(callback)
+            awaitClose {
+                event.removeDeleteListeners()
+            }
+        }
+    }
+
 }
+
+
