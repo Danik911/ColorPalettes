@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.colorpalettes.domain.model.ColorPalette
+import com.example.colorpalettes.navigation.Screen
+import com.example.colorpalettes.util.Constants.COLOR_PALETTE_KEY
 
 @Composable
 fun DefaultContent(
@@ -25,7 +27,16 @@ fun DefaultContent(
                 it.objectId!!
             }
         ) {
-            PaletteHolder(colorPalette = it, onClick = {})
+            PaletteHolder(
+                colorPalette = it,
+                onClick = {
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        key = COLOR_PALETTE_KEY,
+                        value = it
+                    )
+                    navController.navigate(Screen.Details.route)
+                }
+            )
         }
     }
 }
