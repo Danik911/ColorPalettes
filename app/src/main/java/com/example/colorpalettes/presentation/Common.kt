@@ -2,7 +2,6 @@ package com.example.colorpalettes.presentation
 
 import android.app.Activity
 import android.content.Intent
-import androidx.compose.ui.graphics.*
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -110,18 +109,28 @@ private fun getAccessToken(authCode: String?): String? {
     }
     return tokenResponse.accessToken
 }
-fun extractColor(colorPalette: ColorPalette?): List<String>{
+
+fun extractColor(colorPalette: ColorPalette?): List<String> {
     val colors = mutableListOf<String>()
     colorPalette?.colors?.split(",")?.forEach {
         colors.add(it.trim())
     }
     return colors
 }
+
 fun hexToColor(colorHex: String): Color {
     return try {
         Color(("FF" + colorHex.removePrefix("#")).toLong(16))
-    } catch (e: Exception){
+    } catch (e: Exception) {
         Color("FFFFFFFF".toLong(16))
+    }
+}
+
+fun String.parseError(): String {
+    return if (this.contains("No address associated with hostname")) {
+        "No Internet connection"
+    } else {
+        this
     }
 }
 

@@ -45,11 +45,17 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveColorPalette(paletteObjectId: String, userObjectId: String): Int {
-        TODO("Not yet implemented")
+        return backendlessDataSource.saveColorPalette(
+            paletteObjectId = paletteObjectId,
+            userObjectId = userObjectId
+        )
     }
 
     override suspend fun deleteColorPalette(paletteObjectId: String, userObjectId: String): Int {
-        TODO("Not yet implemented")
+        return backendlessDataSource.deleteColorPalette(
+            paletteObjectId = paletteObjectId,
+            userObjectId = userObjectId
+        )
     }
 
 }

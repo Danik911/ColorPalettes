@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.colorpalettes.domain.model.ColorPalette
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun DetailScreen(
@@ -26,6 +27,13 @@ fun DetailScreen(
     LaunchedEffect(key1 = colorPalette) {
         detailViewModel.updateSelectedPalette(colorPalette = colorPalette)
     }
+    LaunchedEffect(key1 = Unit) {
+        detailViewModel.uiEvent.collectLatest { detailScreenUiEvent ->
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = detailScreenUiEvent.message
+            )
+        }
+    }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -33,7 +41,9 @@ fun DetailScreen(
             DetailTopBar(
                 isSaved = isSaved,
                 onBackClicked = { navController.popBackStack() },
-                onSaveClicked = {}
+                onSaveClicked = {
+                    detailViewModel.saveColorPalette()
+                }
             )
 
 
