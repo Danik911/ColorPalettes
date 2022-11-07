@@ -135,6 +135,37 @@ class BackendlessDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun checkSavedPalette(
+        paletteObjectId: String,
+        userObjectId: String
+    ): List<ColorPalette> {
+        val query = DataQueryBuilder.create()
+            .setWhereClause("Users[saved].objectId = '$userObjectId' and objectId = '$paletteObjectId'")
+        return suspendCoroutine { continuation ->
+           backendless.of(ColorPalette::class.java).find(
+               query,
+               object : AsyncCallback <List<ColorPalette>>{
+                   override fun handleResponse(response: List<ColorPalette>) {
+                       continuation.resume(response)
+                   }
+
+                   override fun handleFault(fault: BackendlessFault?) {
+                       continuation.resume(emptyList())
+                   }
+
+               }
+           )
+        }
+    }
+
+    override suspend fun saveColorPalette(paletteObjectId: String, userObjectId: String): Int {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteColorPalette(paletteObjectId: String, userObjectId: String): Int {
+        TODO("Not yet implemented")
+    }
+
 }
 
 

@@ -11,5 +11,8 @@ interface BackendlessDataSource{
     suspend fun observeDeleteRelation(): Flow<RelationStatus?>
     suspend fun observeApproval(): Flow<ColorPalette>
     suspend fun observeDeletedPalettes(): Flow<ColorPalette>
+    suspend fun checkSavedPalette(paletteObjectId: String, userObjectId: String): List<ColorPalette>
+    suspend fun saveColorPalette(paletteObjectId: String, userObjectId: String): Int
+    suspend fun deleteColorPalette(paletteObjectId: String, userObjectId: String): Int
 
 }

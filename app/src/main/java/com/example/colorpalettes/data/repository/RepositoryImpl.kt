@@ -15,7 +15,7 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun getLikeCount(objectId: String): ColorPalette {
-       return backendlessDataSource.getLikeCount(objectId = objectId)
+        return backendlessDataSource.getLikeCount(objectId = objectId)
     }
 
     override suspend fun observeAddRelation(): Flow<RelationStatus?> {
@@ -32,6 +32,24 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun observeDeletedPalettes(): Flow<ColorPalette> {
         return backendlessDataSource.observeDeletedPalettes()
+    }
+
+    override suspend fun checkSavedPalette(
+        paletteObjectId: String,
+        userObjectId: String
+    ): List<ColorPalette> {
+        return backendlessDataSource.checkSavedPalette(
+            paletteObjectId = paletteObjectId,
+            userObjectId = userObjectId
+        )
+    }
+
+    override suspend fun saveColorPalette(paletteObjectId: String, userObjectId: String): Int {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteColorPalette(paletteObjectId: String, userObjectId: String): Int {
+        TODO("Not yet implemented")
     }
 
 }
