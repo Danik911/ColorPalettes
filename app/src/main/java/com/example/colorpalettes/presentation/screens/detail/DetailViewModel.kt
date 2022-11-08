@@ -1,5 +1,8 @@
 package com.example.colorpalettes.presentation.screens.detail
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -112,6 +115,17 @@ class DetailViewModel @Inject constructor(private val repository: Repository) : 
             isSaved = result.any { it.objectId == objectId }
         }
     }
+
+    fun copyToClipboard(context: Context, color: String) {
+        val clipboardManager =
+            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("Color", color)
+        clipboardManager.setPrimaryClip(clipData)
+        viewModelScope.launch {
+            _uiEvent.send(DetailScreenUiEvent.CopyToClipboard(color))
+        }
+
+    }
 }
 
 sealed class DetailScreenUiEvent(val message: String) {
@@ -119,5 +133,6 @@ sealed class DetailScreenUiEvent(val message: String) {
     object RemoveLike : DetailScreenUiEvent(message = "Like is Removed!")
     object SavePalette : DetailScreenUiEvent(message = "Saved!")
     object RemoveSavedPalette : DetailScreenUiEvent(message = "Palette is removed!")
+    data class CopyToClipboard(val color: String) : DetailScreenUiEvent(message = "$color Copied!")
     data class Error(val text: String) : DetailScreenUiEvent(message = text)
 }

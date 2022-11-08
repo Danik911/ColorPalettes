@@ -24,7 +24,9 @@ fun HomeScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = {},
+        topBar = {
+            HomeTopBar(scaffoldState = scaffoldState)
+        },
         drawerContent = {
             NavigationDrawer(
                 navController = navController,

@@ -54,7 +54,12 @@ fun DetailScreen(
         content = {
             DetailsContent(
                 colorPalette = selectedPalette,
-                onColorClicked = {}
+                onColorClicked = {
+                    detailViewModel.copyToClipboard(
+                        context = context,
+                        color = it
+                    )
+                }
             )
         },
         floatingActionButton = {
