@@ -58,4 +58,18 @@ class RepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun addLike(paletteObjectId: String, userObjectId: String): Int? {
+        return backendlessDataSource.addLike(
+            paletteObjectId = paletteObjectId,
+            userObjectId = userObjectId
+        )
+    }
+
+    override suspend fun removeLike(paletteObjectId: String, userObjectId: String): Int? {
+        return backendlessDataSource.removeLike(
+            paletteObjectId = paletteObjectId,
+            userObjectId = userObjectId
+        )
+    }
+
 }

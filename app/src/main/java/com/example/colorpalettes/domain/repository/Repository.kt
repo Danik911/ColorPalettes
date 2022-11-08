@@ -14,4 +14,7 @@ interface Repository {
     suspend fun checkSavedPalette(paletteObjectId: String, userObjectId: String): List<ColorPalette>
     suspend fun saveColorPalette(paletteObjectId: String, userObjectId: String): Int
     suspend fun deleteColorPalette(paletteObjectId: String, userObjectId: String): Int
+    suspend fun addLike(paletteObjectId: String, userObjectId: String): Int?
+    suspend fun removeLike(paletteObjectId: String, userObjectId: String): Int?
+
 }

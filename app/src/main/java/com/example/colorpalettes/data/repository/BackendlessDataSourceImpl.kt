@@ -202,6 +202,46 @@ class BackendlessDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun addLike(paletteObjectId: String, userObjectId: String): Int? {
+        return suspendCoroutine { continuation ->
+            backendless.of(ColorPalette::class.java).addRelation(
+                ColorPalette(objectId = paletteObjectId),
+                "likes",
+                arrayListOf(Users(objectId = userObjectId)),
+                object : AsyncCallback<Int> {
+                    override fun handleResponse(response: Int?) {
+                        continuation.resume(response)
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        continuation.resumeWithException(Exception(fault?.message))
+                    }
+
+                }
+            )
+        }
+    }
+
+    override suspend fun removeLike(paletteObjectId: String, userObjectId: String): Int? {
+        return suspendCoroutine { continuation ->
+            backendless.of(ColorPalette::class.java).deleteRelation(
+                ColorPalette(objectId = paletteObjectId),
+                "likes",
+                arrayListOf(Users(objectId = userObjectId)),
+                object : AsyncCallback<Int> {
+                    override fun handleResponse(response: Int?) {
+                        continuation.resume(response)
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        continuation.resumeWithException(Exception(fault?.message))
+                    }
+
+                }
+            )
+        }
+    }
+
 }
 
 

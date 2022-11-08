@@ -33,35 +33,73 @@ class DetailViewModel @Inject constructor(private val repository: Repository) : 
         checkSavedPalette(colorPalette.objectId!!)
     }
 
-    fun saveColorPalette(){
+    fun saveColorPalette() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = repository.saveColorPalette(
                     paletteObjectId = selectedPalette.objectId!!,
                     userObjectId = Backendless.UserService.CurrentUser().objectId
                 )
-                if (result == 0){
-                    repository.deleteColorPalette(
-                        paletteObjectId = selectedPalette.objectId!!,
-                        userObjectId = Backendless.UserService.CurrentUser().objectId
-                    )
-                    _uiEvent.send(DetailScreenUiEvent.RemoveSavedPalette)
-                    isSaved = false
-                } else if (result > 0){
-                    repository.saveColorPalette(
-                        paletteObjectId = selectedPalette.objectId!!,
-                        userObjectId = Backendless.UserService.CurrentUser().objectId
-                    )
-                    isSaved = true
-                    _uiEvent.send(DetailScreenUiEvent.SavePalette)
-                }
-            } catch (e: Exception){
+                handleResult(result = result)
+            } catch (e: Exception) {
                 _uiEvent.send(
                     DetailScreenUiEvent.Error(
                         text = e.message?.parseError().toString()
                     )
                 )
             }
+        }
+    }
+
+    fun addLike(userObjectId: String = Backendless.UserService.CurrentUser().objectId) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = repository.addLike(
+                    paletteObjectId = selectedPalette.objectId!!,
+                    userObjectId = userObjectId
+                )
+                if (result == 0) {
+                    repository.removeLike(
+                        paletteObjectId = selectedPalette.objectId!!,
+                        userObjectId = userObjectId
+                    )
+                    selectedPalette = selectedPalette.totalLikes?.minus(1).let {
+                        selectedPalette.copy(totalLikes = it)
+                    }
+                    _uiEvent.send(DetailScreenUiEvent.RemoveLike)
+                } else if (result != null && result > 0) {
+                    selectedPalette = selectedPalette.totalLikes?.plus(1).let {
+                        selectedPalette.copy(totalLikes = it)
+                    }
+                    _uiEvent.send(
+                        DetailScreenUiEvent.AddLike
+                    )
+                }
+            } catch (e: Exception) {
+                _uiEvent.send(
+                    DetailScreenUiEvent.Error(
+                        text = e.message?.parseError().toString()
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun handleResult(result: Int) {
+        if (result == 0) {
+            repository.deleteColorPalette(
+                paletteObjectId = selectedPalette.objectId!!,
+                userObjectId = Backendless.UserService.CurrentUser().objectId
+            )
+            _uiEvent.send(DetailScreenUiEvent.RemoveSavedPalette)
+            isSaved = false
+        } else if (result > 0) {
+            repository.saveColorPalette(
+                paletteObjectId = selectedPalette.objectId!!,
+                userObjectId = Backendless.UserService.CurrentUser().objectId
+            )
+            isSaved = true
+            _uiEvent.send(DetailScreenUiEvent.SavePalette)
         }
     }
 

@@ -1,13 +1,16 @@
 package com.example.colorpalettes.presentation.screens.detail
 
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.colorpalettes.domain.model.ColorPalette
+import com.example.colorpalettes.ui.theme.Gray700
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -54,6 +57,26 @@ fun DetailScreen(
                 onColorClicked = {}
             )
         },
-        floatingActionButton = {}
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                backgroundColor = Gray700,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = " Heart Icon",
+                        tint = Color.White
+                    )
+                },
+                text = {
+                    Text(
+                        text = "${selectedPalette.totalLikes ?: 0}",
+                        color = Color.White
+                    )
+                },
+                onClick = {
+                    detailViewModel.addLike()
+                }
+            )
+        }
     )
 }

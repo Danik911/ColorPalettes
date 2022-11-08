@@ -22,7 +22,8 @@ import timber.log.Timber
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
-    navController: NavHostController, loginViewModel: LoginViewModel = hiltViewModel()
+    navController: NavHostController,
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
 
     val signInState = loginViewModel.signedInState
