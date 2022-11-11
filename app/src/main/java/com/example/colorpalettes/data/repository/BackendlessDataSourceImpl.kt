@@ -1,9 +1,11 @@
 package com.example.colorpalettes.data.repository
 
+import com.backendless.Backendless
 import com.backendless.Persistence
 import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
 import com.backendless.persistence.DataQueryBuilder
+import com.backendless.persistence.LoadRelationsQueryBuilder
 import com.backendless.rt.data.RelationStatus
 import com.example.colorpalettes.domain.model.ColorPalette
 import com.example.colorpalettes.domain.model.Users
@@ -239,6 +241,53 @@ class BackendlessDataSourceImpl @Inject constructor(
 
                 }
             )
+        }
+    }
+
+    override suspend fun getSavedPalettes(userObjectId: String): List<ColorPalette> {
+        val relationQuery: LoadRelationsQueryBuilder<ColorPalette> =
+            LoadRelationsQueryBuilder.of(ColorPalette::class.java)
+        relationQuery.setRelationName("saved")
+
+        return suspendCoroutine { continuation ->
+            Backendless.Data.of(Users::class.java).loadRelations(
+                userObjectId,
+                relationQuery,
+                object : AsyncCallback<List<ColorPalette>> {
+                    override fun handleResponse(response: List<ColorPalette>) {
+                        continuation.resume(response)
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        continuation.resumeWithException(Exception(fault?.message))
+                    }
+
+                }
+            )
+        }
+    }
+
+    override suspend fun observeSavedPalettes(userObjectId: String): Flow<RelationStatus?> {
+        return callbackFlow {
+            val event = backendless.of(Users::class.java).rt()
+            val callback = object : AsyncCallback<RelationStatus> {
+                override fun handleResponse(response: RelationStatus?) {
+                    trySendBlocking(response)
+                }
+
+                override fun handleFault(fault: BackendlessFault?) {
+                    fault?.message?.let { cancel(message = it) }
+                }
+
+            }
+            event.addDeleteRelationListener(
+                "saved",
+                listOf(userObjectId),
+                callback
+            )
+            awaitClose{
+                event.removeDeleteListeners()
+            }
         }
     }
 
