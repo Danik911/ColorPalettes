@@ -2,8 +2,10 @@ package com.example.colorpalettes.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.colorpalettes.domain.model.ColorPalette
 import com.example.colorpalettes.presentation.saved.SavedScreen
 import com.example.colorpalettes.presentation.screens.detail.DetailScreen
@@ -23,7 +25,18 @@ fun SetupNavGraph(navHostController: NavHostController) {
         composable(route = Screen.Home.route) {
             HomeScreen(navController = navHostController)
         }
-        composable(route = Screen.Details.route) {
+        composable(
+            route = Screen.Details.route,
+            arguments = listOf(
+                navArgument(
+                    name = "showFab",
+                    builder = {
+                        type = NavType.BoolType
+                        defaultValue = true
+                    }
+                )
+            )
+        ) {
             val savedPalette =
                 navHostController.previousBackStackEntry?.savedStateHandle?.get<ColorPalette>(
                     key = COLOR_PALETTE_KEY
@@ -32,7 +45,7 @@ fun SetupNavGraph(navHostController: NavHostController) {
                 DetailScreen(
                     navController = navHostController,
                     colorPalette = savedPalette,
-                    showFab = true
+                    showFab = it.arguments?.getBoolean("showFab") ?: true
                 )
             }
         }

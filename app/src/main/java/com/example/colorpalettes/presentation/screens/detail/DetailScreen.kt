@@ -63,25 +63,27 @@ fun DetailScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                backgroundColor = Gray700,
-                icon = {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = " Heart Icon",
-                        tint = Color.White
-                    )
-                },
-                text = {
-                    Text(
-                        text = "${selectedPalette.totalLikes ?: 0}",
-                        color = Color.White
-                    )
-                },
-                onClick = {
-                    detailViewModel.addLike()
-                }
-            )
+            if (showFab){
+                ExtendedFloatingActionButton(
+                    backgroundColor = Gray700,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = " Heart Icon",
+                            tint = Color.White
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "${selectedPalette.totalLikes ?: 0}",
+                            color = Color.White
+                        )
+                    },
+                    onClick = {
+                        detailViewModel.addLike()
+                    }
+                )
+            }
         }
     )
 }

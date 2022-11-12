@@ -34,7 +34,7 @@ fun DefaultContent(
                         key = COLOR_PALETTE_KEY,
                         value = it
                     )
-                    navController.navigate(Screen.Details.route)
+                    navController.navigate(Screen.Details.passShowFab(showFab = showFab))
                 }
             )
         }
