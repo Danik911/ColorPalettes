@@ -138,15 +138,13 @@ class BackendlessDataSourceImpl @Inject constructor(
     }
 
     override suspend fun checkSavedPalette(
-        paletteObjectId: String,
-        userObjectId: String
+        paletteObjectId: String, userObjectId: String
     ): List<ColorPalette> {
         val query = DataQueryBuilder.create()
             .setWhereClause("Users[saved].objectId = '$userObjectId' and objectId = '$paletteObjectId'")
         return suspendCoroutine { continuation ->
-            backendless.of(ColorPalette::class.java).find(
-                query,
-                object : AsyncCallback<List<ColorPalette>> {
+            backendless.of(ColorPalette::class.java)
+                .find(query, object : AsyncCallback<List<ColorPalette>> {
                     override fun handleResponse(response: List<ColorPalette>) {
                         continuation.resume(response)
                     }
@@ -155,8 +153,7 @@ class BackendlessDataSourceImpl @Inject constructor(
                         continuation.resume(emptyList())
                     }
 
-                }
-            )
+                })
         }
     }
 
@@ -164,8 +161,7 @@ class BackendlessDataSourceImpl @Inject constructor(
         return suspendCoroutine { continuation ->
             val user = Users(objectId = userObjectId)
 
-            backendless.of(Users::class.java).addRelation(
-                user,
+            backendless.of(Users::class.java).addRelation(user,
                 "saved",
                 arrayListOf(ColorPalette(objectId = paletteObjectId)),
                 object : AsyncCallback<Int> {
@@ -177,8 +173,7 @@ class BackendlessDataSourceImpl @Inject constructor(
                         continuation.resumeWithException(Exception(fault?.message))
                     }
 
-                }
-            )
+                })
         }
     }
 
@@ -186,8 +181,7 @@ class BackendlessDataSourceImpl @Inject constructor(
         return suspendCoroutine { continuation ->
             val user = Users(objectId = userObjectId)
 
-            backendless.of(Users::class.java).deleteRelation(
-                user,
+            backendless.of(Users::class.java).deleteRelation(user,
                 "saved",
                 arrayListOf(ColorPalette(objectId = paletteObjectId)),
                 object : AsyncCallback<Int> {
@@ -199,48 +193,45 @@ class BackendlessDataSourceImpl @Inject constructor(
                         continuation.resumeWithException(Exception(fault?.message))
                     }
 
-                }
-            )
+                })
         }
     }
 
     override suspend fun addLike(paletteObjectId: String, userObjectId: String): Int? {
         return suspendCoroutine { continuation ->
-            backendless.of(ColorPalette::class.java).addRelation(
-                ColorPalette(objectId = paletteObjectId),
-                "likes",
-                arrayListOf(Users(objectId = userObjectId)),
-                object : AsyncCallback<Int> {
-                    override fun handleResponse(response: Int?) {
-                        continuation.resume(response)
-                    }
+            backendless.of(ColorPalette::class.java)
+                .addRelation(ColorPalette(objectId = paletteObjectId),
+                    "likes",
+                    arrayListOf(Users(objectId = userObjectId)),
+                    object : AsyncCallback<Int> {
+                        override fun handleResponse(response: Int?) {
+                            continuation.resume(response)
+                        }
 
-                    override fun handleFault(fault: BackendlessFault?) {
-                        continuation.resumeWithException(Exception(fault?.message))
-                    }
+                        override fun handleFault(fault: BackendlessFault?) {
+                            continuation.resumeWithException(Exception(fault?.message))
+                        }
 
-                }
-            )
+                    })
         }
     }
 
     override suspend fun removeLike(paletteObjectId: String, userObjectId: String): Int? {
         return suspendCoroutine { continuation ->
-            backendless.of(ColorPalette::class.java).deleteRelation(
-                ColorPalette(objectId = paletteObjectId),
-                "likes",
-                arrayListOf(Users(objectId = userObjectId)),
-                object : AsyncCallback<Int> {
-                    override fun handleResponse(response: Int?) {
-                        continuation.resume(response)
-                    }
+            backendless.of(ColorPalette::class.java)
+                .deleteRelation(ColorPalette(objectId = paletteObjectId),
+                    "likes",
+                    arrayListOf(Users(objectId = userObjectId)),
+                    object : AsyncCallback<Int> {
+                        override fun handleResponse(response: Int?) {
+                            continuation.resume(response)
+                        }
 
-                    override fun handleFault(fault: BackendlessFault?) {
-                        continuation.resumeWithException(Exception(fault?.message))
-                    }
+                        override fun handleFault(fault: BackendlessFault?) {
+                            continuation.resumeWithException(Exception(fault?.message))
+                        }
 
-                }
-            )
+                    })
         }
     }
 
@@ -262,8 +253,7 @@ class BackendlessDataSourceImpl @Inject constructor(
                         continuation.resumeWithException(Exception(fault?.message))
                     }
 
-                }
-            )
+                })
         }
     }
 
@@ -281,12 +271,50 @@ class BackendlessDataSourceImpl @Inject constructor(
 
             }
             event.addDeleteRelationListener(
-                "saved",
-                listOf(userObjectId),
+                "saved", listOf(userObjectId), callback
+            )
+            awaitClose {
+                event.removeDeleteListeners()
+            }
+        }
+    }
+
+    override suspend fun getSubmittedPalettes(userObjectId: String): List<ColorPalette> {
+        val query = DataQueryBuilder.create().setWhereClause("ownerId = '$userObjectId'")
+
+        return suspendCoroutine { continuation ->
+            backendless.of(ColorPalette::class.java)
+                .find(query, object : AsyncCallback<List<ColorPalette>> {
+                    override fun handleResponse(response: List<ColorPalette>) {
+                        continuation.resume(response)
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        continuation.resumeWithException(Exception(fault?.message))
+                    }
+
+                })
+        }
+    }
+
+    override suspend fun observeSubmittedPalettes(userObjectId: String): Flow<ColorPalette> {
+        return callbackFlow {
+            val event = backendless.of(ColorPalette::class.java).rt()
+            val callback = object : AsyncCallback<ColorPalette> {
+                override fun handleResponse(response: ColorPalette) {
+                    trySendBlocking(response)
+                }
+
+                override fun handleFault(fault: BackendlessFault?) {
+                    fault?.message?.let { cancel(message = it) }
+                }
+            }
+            event.addCreateListener(
+                "ownerId = '$userObjectId' and approved = false",
                 callback
             )
             awaitClose{
-                event.removeDeleteListeners()
+                event.removeCreateListeners()
             }
         }
     }
