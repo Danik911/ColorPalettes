@@ -118,7 +118,7 @@ fun DrawerBody(
 fun DrawerItem(
     drawerItem: DrawerItem,
     selected: Boolean,
-    itemColor: Color = selected.itemColor(),
+    itemColor: Color = selected.itemBackgroundColor(),
     backgroundColor: Color = selected.backgroundColor(),
     onClick: () -> Unit
 ) {
@@ -146,7 +146,7 @@ fun DrawerItem(
 }
 
 @Composable
-private fun Boolean.itemColor(): Color {
+private fun Boolean.itemBackgroundColor(): Color {
     return if (this) InfoGreen else MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
 }
 

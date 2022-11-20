@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.colorpalettes.domain.model.ColorPalette
 import com.example.colorpalettes.presentation.saved.SavedScreen
+import com.example.colorpalettes.presentation.screens.create.CreateScreen
 import com.example.colorpalettes.presentation.screens.detail.DetailScreen
 import com.example.colorpalettes.presentation.screens.home.HomeScreen
 import com.example.colorpalettes.presentation.screens.login.LoginScreen
@@ -56,6 +57,8 @@ fun SetupNavGraph(navHostController: NavHostController) {
         composable(route = Screen.Submit.route) {
             SubmittedScreen(navController = navHostController)
         }
-        composable(route = Screen.Create.route) {}
+        composable(route = Screen.Create.route) {
+            CreateScreen(navHostController = navHostController)
+        }
     }
 }
