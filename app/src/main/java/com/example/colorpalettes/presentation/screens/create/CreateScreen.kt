@@ -4,7 +4,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import com.example.colorpalettes.presentation.components.ColorPicker
 
 @Composable
 fun CreateScreen(
@@ -14,15 +13,17 @@ fun CreateScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = {},
+        topBar = {
+            CreateTopBar {
+                navHostController.popBackStack()
+            }
+        },
         content = {
-            ColorPicker(
-                selectedColor = {
+            CreateContent(
+                onSubmitClicked = {
 
                 }
             )
         }
     )
-
-
 }
