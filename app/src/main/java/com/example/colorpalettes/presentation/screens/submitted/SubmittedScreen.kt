@@ -45,6 +45,13 @@ fun SubmittedScreen(
                 }
             )
         },
-        content = {}
+        content = {
+            SubmittedContent(
+                navHostController = navController,
+                submittedColors = submittedPalettes,
+                requestState = requestState,
+                onSubmitClicked = {}
+            )
+        }
     )
 }
