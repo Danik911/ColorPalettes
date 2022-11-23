@@ -20,5 +20,6 @@ interface BackendlessDataSource{
     suspend fun observeSavedPalettes(userObjectId: String): Flow<RelationStatus?>
     suspend fun getSubmittedPalettes(userObjectId: String): List<ColorPalette>
     suspend fun observeSubmittedPalettes(userObjectId: String): Flow<ColorPalette>
+    suspend fun submitColorPalette(colorPalette: ColorPalette): ColorPalette
 
 }

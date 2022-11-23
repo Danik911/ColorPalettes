@@ -88,4 +88,8 @@ class RepositoryImpl @Inject constructor(
         return backendlessDataSource.observeSubmittedPalettes(userObjectId = userObjectId)
     }
 
+    override suspend fun submitColorPalette(colorPalette: ColorPalette): ColorPalette {
+        return backendlessDataSource.submitColorPalette(colorPalette = colorPalette)
+    }
+
 }

@@ -6,6 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,11 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.colorpalettes.domain.model.ColorPalette
-import com.example.colorpalettes.domain.model.RequestState
-import com.example.colorpalettes.ui.theme.InfoGreen
 import com.example.colorpalettes.R.drawable
 import com.example.colorpalettes.R.string
+import com.example.colorpalettes.domain.model.ColorPalette
+import com.example.colorpalettes.domain.model.RequestState
+import com.example.colorpalettes.presentation.components.DefaultContent
+import com.example.colorpalettes.ui.theme.InfoGreen
 
 @Composable
 fun SubmittedContent(
@@ -27,13 +29,20 @@ fun SubmittedContent(
     submittedColors: List<ColorPalette>,
     requestState: RequestState,
     onSubmitClicked: () -> Unit
-){
-    if (requestState is RequestState.Success || requestState is RequestState.Error){
-        if (submittedColors.isEmpty()){
-            SubmitView(onSubmitClicked = onSubmitClicked)
+) {
+
+        if (requestState is RequestState.Success || requestState is RequestState.Error) {
+            if (submittedColors.isEmpty()) {
+                SubmitView(onSubmitClicked = onSubmitClicked)
+            } else {
+                DefaultContent(
+                    navController = navHostController,
+                    colorPalettes = submittedColors,
+                    showFab = false
+                )
+            }
         }
     }
-}
 
 @Composable
 fun SubmitView(onSubmitClicked: () -> Unit) {

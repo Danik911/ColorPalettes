@@ -284,7 +284,9 @@ class BackendlessDataSourceImpl @Inject constructor(
 
         return suspendCoroutine { continuation ->
             backendless.of(ColorPalette::class.java)
-                .find(query, object : AsyncCallback<List<ColorPalette>> {
+                .find(
+                    query,
+                    object : AsyncCallback<List<ColorPalette>> {
                     override fun handleResponse(response: List<ColorPalette>) {
                         continuation.resume(response)
                     }
@@ -293,7 +295,8 @@ class BackendlessDataSourceImpl @Inject constructor(
                         continuation.resumeWithException(Exception(fault?.message))
                     }
 
-                })
+                }
+                )
         }
     }
 
@@ -310,12 +313,29 @@ class BackendlessDataSourceImpl @Inject constructor(
                 }
             }
             event.addCreateListener(
-                "ownerId = '$userObjectId' and approved = false",
+                "ownerId = '$userObjectId' and approved = false ",
                 callback
             )
             awaitClose{
                 event.removeCreateListeners()
             }
+        }
+    }
+
+    override suspend fun submitColorPalette(colorPalette: ColorPalette): ColorPalette {
+        return suspendCoroutine { continuation ->
+            backendless.of(ColorPalette::class.java).save(
+                colorPalette,
+                object : AsyncCallback<ColorPalette>{
+                    override fun handleResponse(response: ColorPalette) {
+                        continuation.resume(response)
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        continuation.resumeWithException(Exception(fault?.message))
+                    }
+                }
+            )
         }
     }
 
