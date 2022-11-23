@@ -8,4 +8,5 @@ object Constants {
     const val CLIENT_SECRET ="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"
 
     const val COLOR_PALETTE_KEY = "colorPalette"
+    const val SIGNED_IN_STATE = "signedInState"
 }

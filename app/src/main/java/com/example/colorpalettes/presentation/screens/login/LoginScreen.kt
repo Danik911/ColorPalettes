@@ -15,7 +15,6 @@ import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
 import com.example.colorpalettes.navigation.Screen
 import com.example.colorpalettes.presentation.StartActivityForResult
-import com.example.colorpalettes.presentation.logout
 import com.example.colorpalettes.presentation.signIn
 import timber.log.Timber
 
@@ -65,20 +64,12 @@ fun LoginScreen(
                     }
 
                     override fun handleFault(fault: BackendlessFault?) {
-                        Log.d("LoginScreen", "$fault")
-                        logout(
-                            onSuccess = {
-                                Timber.d("Successfully logout")
-
-                            },
-                            onFailure = {
-                                Timber.d(it)
-                            }
-                        )
+                        loginViewModel.updateSignedInState(signedIn = false)
+                        fault?.let { loginViewModel.updateMessageBarState(message = it.message) }
                     }
 
                 },
-                true
+                false
             )
 
         },

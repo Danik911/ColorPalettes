@@ -14,6 +14,7 @@ import com.example.colorpalettes.presentation.screens.home.HomeScreen
 import com.example.colorpalettes.presentation.screens.login.LoginScreen
 import com.example.colorpalettes.presentation.screens.submitted.SubmittedScreen
 import com.example.colorpalettes.util.Constants.COLOR_PALETTE_KEY
+import com.example.colorpalettes.util.Constants.SIGNED_IN_STATE
 
 @Composable
 fun SetupNavGraph(navHostController: NavHostController) {
@@ -21,7 +22,19 @@ fun SetupNavGraph(navHostController: NavHostController) {
         navController = navHostController,
         startDestination = Screen.Login.route
     ) {
-        composable(route = Screen.Login.route) {
+        composable(
+            route = Screen.Login.route,
+            arguments = listOf(
+                navArgument
+                    (
+                    name = SIGNED_IN_STATE,
+                    builder = {
+                        type = NavType.BoolType
+                        defaultValue = true
+                    }
+                )
+            )
+        ) {
             LoginScreen(navController = navHostController)
         }
         composable(route = Screen.Home.route) {
